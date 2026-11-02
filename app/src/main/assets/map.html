@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="leaflet/leaflet.css" />
+  <style>
+    html, body, #map { margin:0; padding:0; height:100%; width:100%; background:#e8eef5; }
+    .center-pin {
+      position: absolute; left: 50%; top: 50%;
+      width: 28px; height: 28px; margin-left: -14px; margin-top: -28px;
+      z-index: 1000; pointer-events: none;
+    }
+    .center-pin::before {
+      content: '';
+      display: block;
+      width: 22px; height: 22px;
+      margin: 0 auto;
+      background: #1677FF;
+      border: 3px solid #fff;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 2px 6px rgba(0,0,0,.35);
+    }
+    .hint {
+      position: absolute; left: 12px; bottom: 12px; z-index: 1000;
+      background: rgba(255,255,255,.92); padding: 6px 10px; border-radius: 8px;
+      font: 12px/1.4 sans-serif; color: #333; pointer-events: none;
+      box-shadow: 0 1px 4px rgba(0,0,0,.15);
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="center-pin"></div>
+  <div class="hint">拖动地图选点 · 点击也可选点</div>
+  <script src="leaflet/leaflet.js"></script>
+  <script>
+    // Gaode (Amap) web raster tiles — GCJ-02 aligned
+    var subdomains = ['1','2','3','4'];
+    var gaodeUrl = 'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}';
+    var gaodeSat = 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}';
+
+    var map = L.map('map', {
+      zoomControl: true,
+      attributionControl: false,
+      maxZoom: 18,
+      minZoom: 3
+    }).setView([30.2741, 120.1551], 12);
+
+    var road = L.tileLayer(gaodeUrl, {
+      subdomains: subdomains,
+      maxZoom: 18,
+      minZoom: 3
+    }).addTo(map);
+
+    // Optional: keep a simple secondary layer switch unused for MVP
+
+    var moving = false;
+    function notifyMove() {
+      var c = map.getCenter();
+      if (window.AndroidBridge && AndroidBridge.onMapMove) {
+        AndroidBridge.onMapMove(c.lat, c.lng);
+      }
+    }
+    map.on('moveend', function() {
+      if (!moving) notifyMove();
+    });
+    map.on('click', function(e) {
+      map.setView(e.latlng, map.getZoom());
+      if (window.AndroidBridge && AndroidBridge.onMapClick) {
+        AndroidBridge.onMapClick(e.latlng.lat, e.latlng.lng);
+      }
+    });
+
+    window.setCenter = function(lat, lng, zoom) {
+      moving = true;
+      map.setView([lat, lng], zoom || map.getZoom());
+      setTimeout(function(){ moving = false; }, 300);
+    };
+  </script>
+</body>
+</html>

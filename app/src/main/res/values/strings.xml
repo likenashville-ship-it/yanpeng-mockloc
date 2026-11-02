@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">管家模拟定位</string>
+    <string name="search_hint">搜索城市或地点</string>
+    <string name="start_mock">开始模拟</string>
+    <string name="stop_mock">停止模拟</string>
+    <string name="coord_label">当前坐标 (GCJ-02)</string>
+    <string name="manual_lat">纬度</string>
+    <string name="manual_lng">经度</string>
+    <string name="apply_coord">应用坐标</string>
+    <string name="notif_title">正在模拟定位</string>
+    <string name="notif_channel">模拟定位</string>
+    <string name="need_mock_app">请先在开发者选项中，将「选择模拟位置信息应用」设为本应用</string>
+    <string name="need_dev_options">请先开启开发者选项</string>
+</resources>
